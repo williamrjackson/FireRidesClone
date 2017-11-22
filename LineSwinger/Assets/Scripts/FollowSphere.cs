@@ -7,11 +7,13 @@ public class FollowSphere : MonoBehaviour {
     private Vector3 offset;
     private void Start()
     {
+        // get relative position of camera from player/sphere
         offset = sphere.position + transform.position;
     }
 
-    // Update is called once per frame
+    // Use lateupdate to ensure positioning of sphere is complete
     void LateUpdate () {
+        // Move to new poition
         transform.position = sphere.position + offset;
 	}
 }
