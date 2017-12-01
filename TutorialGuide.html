@@ -1,0 +1,170 @@
+﻿<!doctype html><html><head><meta charset="utf-8"><style>
+      /* Separated from document_view.css to enable use in downloadable
+   export files. #cutAndCopyBucket is included for every rule because
+   we wwant cut/copied items to be formatted the same way as they
+   would be when exported. */
+
+.formattedExport,
+#cutAndCopyBucket {
+    font-family: 'Helvetica Neue', Arial, Sans-serif;
+    color: #333;
+    font-size: 13px;
+    line-height: 17px;
+    /* used to set white-space: pre-wrap here, but that messes up GMail's
+       formatting of the export output, so moving that to the name and
+       notes separately. */
+}
+
+.formattedExport .name, .formattedExport .note,
+#cutAndCopyBucket .name, #cutAndCopyBucket .note {
+    white-space: pre-wrap;
+}
+
+.formattedExport ul,
+#cutAndCopyBucket ul{
+    list-style: disc;
+    /* Needed to reset browser defaults. */
+    margin: 0;
+    padding: 0;
+}
+
+.formattedExport li,
+#cutAndCopyBucket li {
+    margin: 4px 0 4px 20px;
+    /* Needed to reset browser defaults. */
+    padding: 0;
+}
+
+.formattedExport > .name,
+#cutAndCopyBucket > .name {
+    font-size: 16px;
+    line-height: 21px;
+}
+
+.formattedExport > .note,
+#cutAndCopyBucket > .note {
+    font-size: 13px;
+    line-height: 17px;
+}
+
+.formattedExport > ul,
+#cutAndCopyBucket > ul {
+    margin-top: 15px;
+}
+
+.formattedExport .name.done,
+#cutAndCopyBucket .name.done {
+    text-decoration:line-through;
+    color:#999;
+}
+
+.formattedExport .note,
+#cutAndCopyBucket .note {
+    font-size: 12px;
+    color:#666;
+}
+
+      </style></head><body class="formattedExport"><span class="name">Fire Rides Replica</span><ul><li><span class="name">Video 1: Project Setup, Main Swing Mechanic</span><ul><li><span class="name">New Project: LineSwinger</span></li><li><span class="name">Parent 2 cubes</span><ul><li><span class="name">Name parent Column</span></li><li><span class="name">colliders</span></li></ul></li><li><span class="name">Add LineRider "player" parent</span><ul><li><span class="name">Add RigidBody</span></li><li><span class="name">Add LineRenderer</span></li><li><span class="name">Add temp sphere transform child</span></li><li><span class="name">Add new "SwingMechanic" script</span></li></ul></li><li><span class="name">SwingMechanic script Phase 1: Main swing:</span><ul><li><span class="name">Get RigidBody</span></li><li><span class="name">Get Line</span></li><li><span class="name">bools m_IsSwinging, m_IsDead; both false</span></li><li><span class="name">In Update()</span><ul><li><span class="name">Thought about Joints, but it seemed easier to just toggle gravity and set the velocity. </span></li><li><span class="name">Set State:</span><ul><li><span class="name">Test for touchdown/spacedown</span><ul><li><span class="name">IsSwinging = true</span></li><li><span class="name">gravity off</span></li><li><span class="name">Enable Line</span></li><li><span class="name">Raycast fwd/up</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; RaycastHit hit;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (Physics.Raycast(transform.position, transform.forward + transform.up, out hit))
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; m_RopeDest = hit.point;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }
+</span></li></ul></li><li><span class="name">Test for touchup/spaceup</span><ul><li><span class="name">IsSwinging = false</span></li><li><span class="name">gravity on</span></li><li><span class="name">Disable Line</span></li></ul></li></ul></li><li><span class="name">Behave based on state:</span><ul><li><span class="name">Draw line</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; line.positionCount = 2;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; line.SetPosition(0, transform.position);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; line.SetPosition(1, m_RopeDest);</span></li><li><span class="name">Set Velocity using Cross Product - tricky part</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; m_Body.velocity = Vector3.Cross(-transform.right, (transform.position - m_RopeDest).normalized) * speed;</span></li><li><span class="name">https://docs.unity3d.com/ScriptReference/Vector3.Cross.html</span></li></ul></li></ul></li><li><span class="name">Camera follow</span><ul><li><span class="name">Simple approach: Stiff direct following, with an offset established in Start()</span></li><li><span class="name">LateUpdate() to ensure the followed object moves first.</span><br /><span class="note">public Transform player;
+private Vector3 offset;
+
+private void Start()
+{
+&nbsp; &nbsp; offset = sphere.position + transform.position;
+}
+
+void LateUpdate () 
+{
+&nbsp; &nbsp; transform.position = player.position + offset;
+}</span></li><li><span class="name">REMEMBER to assign player object</span></li></ul></li><li><span class="name">Set Die Condition on collision</span><ul><li><span class="name">OnCollisionEnter</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; m_Body.velocity = Vector3.zero;
+&nbsp; &nbsp; &nbsp; &nbsp; m_bIsDead = true;
+</span></li><li><span class="name">Conditionalize SpaceDown to only work if !m_IsDead.</span><ul><li><span class="name">Otherwise reset scene</span><br /><span class="note">SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
+</span></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">Video 2: Lane generation</span><ul><li><span class="name">Build Prefab, replacing big temp cubes.</span><ul><li><span class="name">Depth 1 unit</span></li></ul></li><li><span class="name">Add new script to "LaneGenerator" parent transform</span><ul><li><span class="name">public GameObject InitialColumn</span></li><li><span class="name">public int ColumnCount = 16</span><ul><li><span class="name">These Recycle, moving the oldest and declaring it the new "latest"; So, we'll start by creating these 16 (or whatever we specify in the inspector) and write a function to move them.</span></li></ul></li><li><span class="name">In Start():</span><ul><li><span class="name">Get the width of the InitialColumn prefab - set it to m_ColumnSize;</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; m_ColumnSize = InitialColumn.transform.localScale.z;</span></li><li><span class="name">Make new private list so we can keep track of the columns.</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; m_ColumnList = new List&lt;GameObject&gt;();
+</span></li><li><span class="name">Loop, instantiating the number of columns we want. Expect for the first one. In that case we'll use the one that's already in scene.</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; for (int i = 0; i &lt; count; i++)
+&nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (i == 0)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; m_ColumnList.Add(InitialColumn);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SetColor(0);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; GameObject newColumn = Instantiate(InitialColumn);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; newColumn.transform.parent = InitialColumn.transform.parent;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; m_ColumnList.Add(newColumn);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; In A Minute!!! --&gt; !!! PlaceColumn(m_ColumnList.Count - 1, m_ColumnList[m_ColumnList.Count - 2].transform.position, 1);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; &nbsp; &nbsp; }
+</span></li><li><span class="name">All done filling the list, say the first is the OLDEST one, and the last is the NEWEST one</span><br /><span class="note">&nbsp; &nbsp; &nbsp; &nbsp; m_OldestColumnIndex = 0;
+&nbsp; &nbsp; &nbsp; &nbsp; m_NewestColumnIndex = m_ColumnList.Count - 1;</span></li></ul></li><li><span class="name">Need a PlaceColumn() function that will position the object the way we want, with some randomness in the Y axis, and exactly one column "deeper" or farther away. In other words: we'll add m_LaneSize to the last lane's Z position.</span><br /><span class="note">private void PlaceColumn(int columnIndex, Vector3 prevColumnPos, float maximumVariance )
+{
+&nbsp; &nbsp; Vector3 movePos = new Vector3(prevColumnPos.x, Random.Range(prevColumnPos.y - maximumVariance, prevColumnPos.y + maximumVariance), prevColumnPos.z + m_ColumnSize);
+
+&nbsp; &nbsp; m_ColumnList[columnIndex].transform.position = movePos;
+}</span></li><li><span class="name">In Update(), we need to recycle an old column and feed it to PlaceColumne() every time the player moves right by the LaneSize</span><br /><span class="note">void Update () {
+    if (ball.position.z &gt; m_LastAppliedBallZ + m_LaneSize)
+&nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; PlaceColumn(m_OldestColumnIndex, m_ColumnList[m_NewestColumnIndex].transform.position, maxVariance);
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; m_NewestColumnIndex = m_OldestColumnIndex;
+&nbsp; &nbsp; &nbsp; &nbsp; m_OldestColumnIndex = (m_OldestColumnIndex + 1) % m_ColumnList.Count;
+&nbsp; &nbsp; &nbsp; &nbsp; m_LastAppliedBallZ += m_LaneSize;
+&nbsp; &nbsp; &nbsp; &nbsp; }
+</span></li></ul></li><li><span class="name">One last thing in this video: Setting alternating color</span><ul><li><span class="name">Looks like every other column has a lower saturation. </span></li><li><span class="name">It also looks like every level changes the overall hue. But to make it more noticeable here, I'll just gradually change the hue over time. If we want we can modify the behavior later.</span></li><li><span class="name">SetColor() goes in PlaceColumn and for the first column's addition to the list</span><br /><span class="note">&nbsp; &nbsp; private void SetColor(int columnIndex)
+&nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; m_Hue += (1f / 250f);
+&nbsp; &nbsp; &nbsp; &nbsp; if (m_Hue &gt; 1f)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; m_Hue = 0;
+&nbsp; &nbsp; &nbsp; &nbsp; float saturation = .7f;
+&nbsp; &nbsp; &nbsp; &nbsp; if (columnIndex % 2 == 0)
+&nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; saturation = .5f;
+&nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; &nbsp; &nbsp; foreach (MeshRenderer renderer in m_ColumnList[columnIndex].GetComponentsInChildren&lt;MeshRenderer&gt;())
+&nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; renderer.material.color = Color.HSVToRGB(m_Hue, saturation, .7f);
+&nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; }</span></li></ul></li></ul></li><li><span class="name">Video 3: Targets and scoring</span><ul><li><span class="name">Build Targets</span><ul><li><span class="name">2 planes; Make them box collider triggers</span></li><li><span class="name">Make an image in Paint.Net</span></li><li><span class="name">Apply Image to new Particle|Additive material.</span></li><li><span class="name">Instantiate prefab in LaneGenerator</span><ul><li><span class="name">Instantiate:</span><br /><span class="note">targetCounter++;
+if (targetCounter &gt;= targetFrequency)
+{
+&nbsp; &nbsp; GameObject target = Instantiate(targetPrefab);
+&nbsp; &nbsp; target.transform.parent = m_ColumnList[columnIndex].transform;
+&nbsp; &nbsp; target.name = "Goal";
+&nbsp; &nbsp; target.transform.localPosition = new Vector3(0, Random.Range(-5f, 5f), 0);
+&nbsp; &nbsp; targetCounter = 0;
+}</span></li><li><span class="name">Remove if necessary:</span><br /><span class="note">if (m_ColumnList[columnIndex].transform.Find("Goal"))
+{
+&nbsp; &nbsp; Destroy(m_ColumnList[columnIndex].transform.Find("Goal").gameObject);
+}</span></li></ul></li><li><span class="name">Plane gets a Score script.</span><ul><li><span class="name">Print(points) and prevent other sibling colliders from registering</span><br /><span class="note">foreach (Collider collider in transform.parent.GetComponentsInChildren&lt;Collider&gt;())
+{
+ &nbsp; collider.enabled = false;
+}</span></li></ul></li></ul></li><li><span class="name">Create GameManager singleton //TODO</span><ul><li><span class="name">Holds score</span></li><li><span class="name">Stores highscore</span></li><li><span class="name">public incrementers</span></li></ul></li></ul></li><li><span class="name">Video 4: Final touches &amp; Fancy effects</span><ul><li><span class="name">Glowing ball </span></li><li><span class="name">Particle trail</span></li><li><span class="name">Growing or dissolving targets</span><br /><span class="note">&nbsp; &nbsp; private IEnumerator ExplodeTarget(Transform target)
+&nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; float duration = .2f;
+&nbsp; &nbsp; &nbsp; &nbsp; float elapsedTime = 0f;
+&nbsp; &nbsp; &nbsp; &nbsp; float startTime = Time.time;
+&nbsp; &nbsp; &nbsp; &nbsp; Vector3 initialScale = target.localScale;
+&nbsp; &nbsp; &nbsp; &nbsp; while (elapsedTime &lt; duration)
+&nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elapsedTime += Time.deltaTime;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; target.localScale = Vector3.Lerp(initialScale, Vector3.one * 20, (elapsedTime / duration));
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yield return new WaitForEndOfFrame();
+&nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; }</span></li><li><span class="name">Add Fog</span></li><li><span class="name">Increase Gravity</span></li><li><span class="name">Other ideas:</span><ul><li><span class="name">Swinging start pos.</span><br /><span class="note">&nbsp; &nbsp; private IEnumerator InitialSwing()
+&nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; float initialSpeed = speed;
+&nbsp; &nbsp; &nbsp; &nbsp; float startTime = 0;
+&nbsp; &nbsp; &nbsp; &nbsp; while(!m_bHasStarted)
+&nbsp; &nbsp; &nbsp; &nbsp; {
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; speed = Mathf.PingPong(startTime * initialSpeed, initialSpeed * 2) - initialSpeed;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; startTime += Time.deltaTime;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yield return new WaitForEndOfFrame();
+&nbsp; &nbsp; &nbsp; &nbsp; }
+&nbsp; &nbsp; &nbsp; &nbsp; speed = initialSpeed;
+&nbsp; &nbsp; }</span></li><li><span class="name">LineDestination marker //TODO</span></li><li><span class="name">Swinging targets //TODO</span></li><li><span class="name">Reaching Line //TODO</span></li><li><span class="name">Glowing Line //Meh - Bonus Video?</span></li></ul></li></ul></li></ul></body></html>
